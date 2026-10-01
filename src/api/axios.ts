@@ -3,7 +3,7 @@ import axios from "axios";
 const api = axios.create({
     baseURL: import.meta.env.DEV
         ? "/api"
-        : "http://98.89.35.220:8081",
+        : "http://98.89.35.220",
 });
 
 api.interceptors.request.use(
