@@ -78,10 +78,7 @@ const StatusSummary = ({
         <Card elevation={0} sx={cardSx}>
             <CardContent
                 sx={{
-                    p: {
-                        xs: "12px !important",
-                        sm: "16px !important",
-                    },
+                    p: { xs: "12px !important", sm: "16px !important" },
                 }}
             >
                 {/* ================= STATUS SUMMARY HEADER ================= */}
@@ -100,10 +97,7 @@ const StatusSummary = ({
                     <Typography
                         component="h2"
                         sx={{
-                            fontSize: {
-                                xs: 13,
-                                sm: 14,
-                            },
+                            fontSize: { xs: 13, sm: 14 },
                             fontWeight: 700,
                             color: "#334155",
                         }}
@@ -112,12 +106,7 @@ const StatusSummary = ({
                     </Typography>
 
                     {showModeToggle && (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                gap: 0.5,
-                            }}
-                        >
+                        <Box sx={{ display: "flex", gap: 0.5 }}>
                             <Button
                                 size="small"
                                 variant={
@@ -125,9 +114,7 @@ const StatusSummary = ({
                                         ? "contained"
                                         : "outlined"
                                 }
-                                onClick={() =>
-                                    onCountModeChange?.("date")
-                                }
+                                onClick={() => onCountModeChange?.("date")}
                                 sx={{
                                     textTransform: "none",
                                     fontSize: 11,
@@ -147,11 +134,7 @@ const StatusSummary = ({
                                         ? "contained"
                                         : "outlined"
                                 }
-                                onClick={() =>
-                                    onCountModeChange?.(
-                                        "beginning"
-                                    )
-                                }
+                                onClick={() => onCountModeChange?.("beginning")}
                                 sx={{
                                     textTransform: "none",
                                     fontSize: 11,
@@ -175,51 +158,31 @@ const StatusSummary = ({
                             xs: "1fr",
                             sm: "repeat(3, minmax(0, 1fr))",
                         },
-                        gap: {
-                            xs: 1,
-                            sm: 1.5,
-                        },
+                        gap: { xs: 1, sm: 1.5 },
                         width: "100%",
                     }}
                 >
                     {summaryCards.map((card) => {
                         const isSelected =
-                            clickable &&
-                            card.filter === selectedStatus;
+                            clickable && card.filter === selectedStatus;
 
                         const handleClick = () => {
-                            if (
-                                clickable &&
-                                handleSummaryFilter
-                            ) {
-                                handleSummaryFilter(
-                                    card.filter
-                                );
+                            if (clickable && handleSummaryFilter) {
+                                handleSummaryFilter(card.filter);
                             }
                         };
 
                         return (
                             <Box
                                 key={card.label}
-                                role={
-                                    clickable
-                                        ? "button"
-                                        : undefined
-                                }
-                                tabIndex={
-                                    clickable ? 0 : undefined
-                                }
-                                onClick={
-                                    clickable
-                                        ? handleClick
-                                        : undefined
-                                }
+                                role={clickable ? "button" : undefined}
+                                tabIndex={clickable ? 0 : undefined}
+                                onClick={clickable ? handleClick : undefined}
                                 onKeyDown={
                                     clickable
                                         ? (event) => {
                                             if (
-                                                event.key ===
-                                                "Enter" ||
+                                                event.key === "Enter" ||
                                                 event.key === " "
                                             ) {
                                                 event.preventDefault();
@@ -231,10 +194,7 @@ const StatusSummary = ({
                                 sx={{
                                     width: "100%",
                                     minWidth: 0,
-                                    minHeight: {
-                                        xs: 85,
-                                        sm: 100,
-                                    },
+                                    minHeight: { xs: 85, sm: 100 },
                                     borderRadius: 1.5,
                                     backgroundColor: isSelected
                                         ? "#f8fafc"
@@ -243,9 +203,7 @@ const StatusSummary = ({
                                     flexDirection: "column",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    cursor: clickable
-                                        ? "pointer"
-                                        : "default",
+                                    cursor: clickable ? "pointer" : "default",
                                     color: isSelected
                                         ? card.background
                                         : card.color,
@@ -266,8 +224,7 @@ const StatusSummary = ({
 
                                     ...(clickable && {
                                         "&:hover": {
-                                            transform:
-                                                "translateY(-2px)",
+                                            transform: "translateY(-2px)",
                                             boxShadow:
                                                 "0 6px 14px rgba(15, 23, 42, 0.15)",
                                         },
@@ -279,16 +236,11 @@ const StatusSummary = ({
                                     }),
                                 }}
                             >
+                                {/* Icon */}
                                 <Box
                                     sx={{
-                                        width: {
-                                            xs: 34,
-                                            sm: 40,
-                                        },
-                                        height: {
-                                            xs: 34,
-                                            sm: 40,
-                                        },
+                                        width: { xs: 34, sm: 40 },
+                                        height: { xs: 34, sm: 40 },
                                         borderRadius: "50%",
                                         display: "flex",
                                         alignItems: "center",
@@ -302,27 +254,21 @@ const StatusSummary = ({
                                         boxShadow:
                                             "0 2px 7px rgba(15, 23, 42, 0.15)",
                                         mb: 0.5,
-                                        transition:
-                                            "all 0.2s ease",
+                                        transition: "all 0.2s ease",
 
                                         "& svg": {
-                                            fontSize: {
-                                                xs: 19,
-                                                sm: 22,
-                                            },
+                                            fontSize: { xs: 19, sm: 22 },
                                         },
                                     }}
                                 >
                                     {card.icon}
                                 </Box>
 
+                                {/* Label */}
                                 <Typography
                                     component="span"
                                     sx={{
-                                        fontSize: {
-                                            xs: 11,
-                                            sm: 12,
-                                        },
+                                        fontSize: { xs: 11, sm: 12 },
                                         fontWeight: 600,
                                         color: isSelected
                                             ? card.background
@@ -334,13 +280,11 @@ const StatusSummary = ({
                                     {card.label}
                                 </Typography>
 
+                                {/* Count */}
                                 <Typography
                                     component="span"
                                     sx={{
-                                        fontSize: {
-                                            xs: 18,
-                                            sm: 21,
-                                        },
+                                        fontSize: { xs: 18, sm: 21 },
                                         lineHeight: 1.2,
                                         fontWeight: 700,
                                         color: isSelected

@@ -16,15 +16,7 @@ export interface CheckboxProps {
     helperText?: string;
 
     size?: "small" | "medium";
-    color?:
-    | "primary"
-    | "secondary"
-    | "success"
-    | "error"
-    | "info"
-    | "warning"
-    | "default";
-
+    color?: | "primary" | "secondary" | "success" | "error" | "info" | "warning" | "default";
     name?: string;
     id?: string;
 }
