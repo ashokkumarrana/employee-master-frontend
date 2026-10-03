@@ -18,10 +18,11 @@ const ActionButtons = ({ onEdit, onDelete }: ActionButtonsProps) => {
                 gap: 0.5,
             }}>
             {onEdit && (
-                <Tooltip title="Edit">
+                <Tooltip title="Edit" arrow placement="top">
                     <IconButton
                         type="button"
                         size="small"
+                        aria-label="edit"
                         onClick={(event) => { event.stopPropagation(); onEdit(); }}
                         sx={{
                             width: 32,
@@ -36,10 +37,11 @@ const ActionButtons = ({ onEdit, onDelete }: ActionButtonsProps) => {
             )}
 
             {onDelete && (
-                <Tooltip title="Delete">
+                <Tooltip title="Delete" arrow placement="top">
                     <IconButton
                         type="button"
                         size="small"
+                        aria-label="delete"
                         onClick={(event) => { event.stopPropagation(); onDelete(); }}
                         sx={{
                             width: 32,

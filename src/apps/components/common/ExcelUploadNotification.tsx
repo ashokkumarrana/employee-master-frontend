@@ -11,6 +11,7 @@ import {
     IconButton,
     Paper,
     Popover,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -171,26 +172,25 @@ const ExcelUploadNotification = () => {
 
     return (
         <>
-            {/* Notification Icon (white, for the blue header) */}
-            <IconButton
-                onClick={handleOpen}
-                sx={{
-                    display: { xs: "none", sm: "flex" },
-                    width: 40,
-                    height: 40,
-                    borderRadius: "10px",
-                    color: "#ffffff",
-                    backgroundColor: anchorEl ? "rgba(255, 255, 255, 0.18)" : "transparent",
-                    transition: "background-color 0.2s ease",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.14)" },
-                }}
-            >
-                <Badge badgeContent={unreadCount} color="error" overlap="circular">
-                    <EmailOutlinedIcon sx={{ fontSize: 22 }} />
-                </Badge>
-            </IconButton>
-
-            {/* Notification Popover (merged list) */}
+            <Tooltip title={anchorEl ? "" : "Notifications"} arrow placement="bottom">
+                <IconButton
+                    onClick={handleOpen}
+                    aria-label="notifications"
+                    sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "10px",
+                        color: "#ffffff",
+                        backgroundColor: anchorEl ? "rgba(255, 255, 255, 0.18)" : "transparent",
+                        transition: "background-color 0.2s ease",
+                        "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.14)" },
+                    }}
+                >
+                    <Badge badgeContent={unreadCount} color="error" overlap="circular">
+                        <EmailOutlinedIcon sx={{ fontSize: 22 }} />
+                    </Badge>
+                </IconButton>
+            </Tooltip>
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}

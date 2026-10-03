@@ -19,9 +19,9 @@ const EmployeeFabActions = ({
         position: "fixed",
         right: 24,
         zIndex: 20,
-        width: 48,
-        height: 48,
-        minHeight: 48,
+        width: 42,
+        height: 42,
+        minHeight: 42,
     };
 
     return (
@@ -38,7 +38,7 @@ const EmployeeFabActions = ({
                     onClick={onUploadExcel}
                     sx={{
                         ...fabSx,
-                        bottom: 184,
+                        bottom: 172,
                     }}
                 >
                     <UploadFile fontSize="small" />
@@ -57,9 +57,8 @@ const EmployeeFabActions = ({
                     onClick={onDownloadTemplate}
                     sx={{
                         ...fabSx,
-                        bottom: 133,
-                    }}
-                >
+                        bottom: 127,
+                    }}>
                     <DownloadIcon fontSize="small" />
                 </Fab>
             </Tooltip>
@@ -77,8 +76,7 @@ const EmployeeFabActions = ({
                     sx={{
                         ...fabSx,
                         bottom: 82,
-                    }}
-                >
+                    }}>
                     <AddIcon fontSize="small" />
                 </Fab>
             </Tooltip>

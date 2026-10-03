@@ -14,7 +14,7 @@ const Footer = ({ sidebarOpen }: FooterProps) => {
                 right: 0,
                 left: {
                     xs: 0,
-                    md: sidebarOpen ? "240px" : "64px",
+                    lg: sidebarOpen ? "240px" : "64px",
                 },
                 height: { xs: "30px", sm: "32px" },
                 minHeight: { xs: "30px", sm: "32px" },

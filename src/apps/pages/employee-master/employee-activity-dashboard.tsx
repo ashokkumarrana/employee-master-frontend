@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
-import { Alert, Box, CircularProgress, IconButton, Link, Snackbar, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, IconButton, Snackbar, Tooltip, Typography } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import ReactTable, { type EmployeeTableColumn } from "../../components/common/ReactTable";
@@ -224,23 +224,15 @@ const EmployeeActivityBoard = () => {
                 direction,
                 filters: {
                     departmentId: appliedFilters.department
-                        ? Number(appliedFilters.department)
-                        : undefined,
+                        ? Number(appliedFilters.department) : undefined,
                     designationId: appliedFilters.designation
-                        ? Number(appliedFilters.designation)
-                        : undefined,
+                        ? Number(appliedFilters.designation) : undefined,
                     city: appliedFilters.city?.trim() || undefined,
-                    status:
-                        appliedFilters.status === "active"
-                            ? false
-                            : appliedFilters.status === "inactive"
-                                ? true
-                                : undefined,
-                    fromDate: effectiveMode === "beginning"
-                        ? undefined
+                    status: appliedFilters.status === "active" ? false
+                        : appliedFilters.status === "inactive" ? true : undefined,
+                    fromDate: effectiveMode === "beginning" ? undefined
                         : (dateFromKey || undefined),
-                    toDate: effectiveMode === "beginning"
-                        ? undefined
+                    toDate: effectiveMode === "beginning" ? undefined
                         : (dateToKey || undefined),
                 },
             })
@@ -377,14 +369,35 @@ const EmployeeActivityBoard = () => {
             minWidth: 130,
             align: "center",
             render: (row) => (
-                <Link
-                    component="button"
-                    type="button"
-                    underline="hover"
-                    onClick={() => handleOpenHistory(row)}
-                    sx={{ fontSize: "12.5px", fontWeight: 600, color: "#2563eb", textAlign: "left" }}>
-                    {row.employeeCode}
-                </Link>
+                <Tooltip title="View History" arrow placement="top">
+                    <Button
+                        type="button"
+                        size="small"
+                        variant="outlined"
+                        onClick={() => handleOpenHistory(row)}
+                        sx={{
+                            minWidth: 0,
+                            minHeight: 0,
+                            height: 22,
+                            px: 1,
+                            py: 0,
+                            fontSize: "11.5px",
+                            fontWeight: 600,
+                            lineHeight: 1,
+                            textTransform: "none",
+                            borderRadius: "999px",
+                            color: "#2563eb",
+                            backgroundColor: "#eff6ff",
+                            borderColor: "#bfdbfe",
+                            "&:hover": {
+                                color: "#ffffff",
+                                backgroundColor: "#2563eb",
+                                borderColor: "#2563eb",
+                            },
+                        }}>
+                        {row.employeeCode}
+                    </Button>
+                </Tooltip>
             ),
         },
         {
@@ -607,72 +620,75 @@ const EmployeeActivityBoard = () => {
                 <>
                     <Box sx={{ width: "100%", minWidth: 0 }}>
                         {/* Heading */}
-
                         <Box
                             sx={{
                                 display: "flex",
-                                justifyContent: "space-between",
                                 alignItems: "center",
-                                mb: 3,
+                                gap: 1.5,
+                                mb: 2,
+                                px: 2,
+                                py: 1.2,
+                                borderRadius: "12px",
+                                backgroundColor: "#eff6ff",
+                                border: "1px solid #bfdbfe",
                                 cursor: "default",
                             }}>
                             <Box
                                 sx={{
+                                    width: 38,
+                                    height: 38,
+                                    flexShrink: 0,
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 1.2,
-                                    px: 1.5,
-                                    py: 0.7,
+                                    justifyContent: "center",
                                     borderRadius: "10px",
-                                    backgroundColor: "#eff6ff",
-                                    transition: "all 0.25s ease",
-                                    "&:hover": { backgroundColor: "#dbeafe" },
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        width: 38,
-                                        height: 38,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        borderRadius: "10px",
-                                        backgroundColor: "#2563eb",
-                                        color: "#fff",
-                                    }}
-                                >
-                                    <PeopleAltOutlinedIcon sx={{ fontSize: 23 }} />
-                                </Box>
+                                    backgroundColor: "#2563eb",
+                                    color: "#ffffff",
+                                }}>
+                                <PeopleAltOutlinedIcon sx={{ fontSize: 22 }} />
+                            </Box>
+
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
                                 <Typography
+                                    variant="h6"
                                     component="h2"
                                     sx={{
-                                        fontSize: { xs: "20px", sm: "22px", md: "24px" },
                                         fontWeight: 700,
                                         color: "#2563eb",
-                                        letterSpacing: "0.2px",
+                                        lineHeight: 1.3,
+                                        fontSize: { xs: "17px", sm: "20px" },
                                     }}>
                                     Employee Master Activity Board
                                 </Typography>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ color: "#64748b", fontSize: "12.5px", lineHeight: 1.3 }}>
+                                    Employee records and activity overview
+                                </Typography>
                             </Box>
 
-                            <IconButton
-                                onClick={handleHardRefresh}
-                                disabled={hardRefreshing}
-                                sx={{
-                                    backgroundColor: "#2563eb",
-                                    color: "#fff",
-                                    width: 42,
-                                    height: 42,
-                                    "&:hover": { backgroundColor: "#1d4ed8" },
-                                    "&.Mui-disabled": { backgroundColor: "#93c5fd", color: "#fff" },
-                                }}
-                            >
-                                {hardRefreshing ? (
-                                    <CircularProgress size={20} sx={{ color: "#fff" }} />
-                                ) : (
-                                    <RefreshIcon />
-                                )}
-                            </IconButton>
+                            <Tooltip title="Refresh" arrow placement="bottom">
+                                <span>
+                                    <IconButton
+                                        onClick={handleHardRefresh}
+                                        disabled={hardRefreshing}
+                                        aria-label="hard refresh"
+                                        sx={{
+                                            backgroundColor: "#2563eb",
+                                            color: "#fff",
+                                            width: 38,
+                                            height: 38,
+                                            "&:hover": { backgroundColor: "#1d4ed8" },
+                                            "&.Mui-disabled": { backgroundColor: "#93c5fd", color: "#fff" },
+                                        }}>
+                                        {hardRefreshing ? (
+                                            <CircularProgress size={20} sx={{ color: "#fff" }} />
+                                        ) : (
+                                            <RefreshIcon />
+                                        )}
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
                         </Box>
 
                         {/* Filter + Status Summary */}

@@ -8,6 +8,29 @@ import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 import { login, getUserByUsername } from "./authApi";
 
+const inputSx = {
+    "& .MuiOutlinedInput-root": {
+        borderRadius: "10px",
+        color: "#ffffff",
+        backgroundColor: "rgba(255,255,255,0.06)",
+        transition: "all 0.2s ease",
+        "& fieldset": { borderColor: "rgba(255,255,255,0.2)" },
+        "&:hover fieldset": { borderColor: "rgba(255,255,255,0.4)" },
+        "&.Mui-focused": { backgroundColor: "rgba(255,255,255,0.09)" },
+        "&.Mui-focused fieldset": { borderColor: "#60a5fa", borderWidth: "1.5px" },
+    },
+    "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.6)" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#93c5fd" },
+    "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus": {
+        WebkitBoxShadow: "0 0 0 100px #2b4379 inset",
+        WebkitTextFillColor: "#ffffff",
+        caretColor: "#ffffff",
+        borderRadius: "inherit",
+    },
+};
+
+const adornmentIconColor = "rgba(255,255,255,0.6)";
+
 const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -95,21 +118,36 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                     sx={{
                         position: "relative",
                         zIndex: 1,
+                        overflow: "hidden",
                         width: "100%",
                         maxWidth: 420,
                         p: { xs: 3.5, sm: 5 },
-                        borderRadius: "16px",
-                        border: "1px solid rgba(255,255,255,0.2)",
-                        boxShadow: "0 20px 50px rgba(15, 23, 42, 0.35)",
+                        borderRadius: "20px",
+                        color: "#ffffff",
+                        backgroundColor: "rgba(15, 23, 42, 0.45)",
+                        backdropFilter: "blur(18px)",
+                        WebkitBackdropFilter: "blur(18px)",
+                        border: "1px solid rgba(255,255,255,0.16)",
+                        boxShadow: "0 25px 60px rgba(8, 15, 40, 0.5)",
+                        "&::before": {
+                            content: '""',
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: 3,
+                            background: "linear-gradient(90deg, #3b82f6, #60a5fa, #93c5fd)",
+                        },
                     }}
                 >
                     {/* Logo / Icon */}
                     <Box
                         sx={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: "14px",
-                            backgroundColor: "#eff6ff",
+                            width: 60,
+                            height: 60,
+                            borderRadius: "16px",
+                            background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                            boxShadow: "0 8px 22px rgba(37, 99, 235, 0.45)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -117,7 +155,7 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                             mb: 2.5,
                         }}
                     >
-                        <Groups2OutlinedIcon sx={{ fontSize: 28, color: "#2563eb" }} />
+                        <Groups2OutlinedIcon sx={{ fontSize: 30, color: "#ffffff" }} />
                     </Box>
 
                     {/* Heading */}
@@ -126,7 +164,8 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                         sx={{
                             fontWeight: 700,
                             textAlign: "center",
-                            color: "#1e293b",
+                            color: "#ffffff",
+                            letterSpacing: "0.2px",
                             mb: 0.5,
                         }}
                     >
@@ -136,10 +175,9 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                         variant="body2"
                         sx={{
                             textAlign: "center",
-                            color: "#64748b",
+                            color: "rgba(255,255,255,0.65)",
                             mb: 4,
-                        }}
-                    >
+                        }}>
                         Sign in to Employee Master to continue
                     </Typography>
 
@@ -156,16 +194,12 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                             input: {
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <PersonIcon sx={{ fontSize: 20, color: "#94a3b8" }} />
+                                        <PersonIcon sx={{ fontSize: 20, color: adornmentIconColor }} />
                                     </InputAdornment>
                                 ),
                             },
                         }}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "8px",
-                            },
-                        }}
+                        sx={inputSx}
                     />
 
                     {/* Password */}
@@ -181,7 +215,7 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                             input: {
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <LockOutlinedIcon sx={{ fontSize: 20, color: "#94a3b8" }} />
+                                        <LockOutlinedIcon sx={{ fontSize: 20, color: adornmentIconColor }} />
                                     </InputAdornment>
                                 ),
                                 endAdornment: (
@@ -190,22 +224,19 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                                             onClick={() => setShowPassword((prev) => !prev)}
                                             edge="end"
                                             size="small"
+                                            sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" } }}
                                         >
                                             {showPassword ? (
-                                                <VisibilityOff sx={{ fontSize: 20, color: "#94a3b8" }} />
+                                                <VisibilityOff sx={{ fontSize: 20, color: adornmentIconColor }} />
                                             ) : (
-                                                <Visibility sx={{ fontSize: 20, color: "#94a3b8" }} />
+                                                <Visibility sx={{ fontSize: 20, color: adornmentIconColor }} />
                                             )}
                                         </IconButton>
                                     </InputAdornment>
                                 ),
                             },
                         }}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "8px",
-                            },
-                        }}
+                        sx={inputSx}
                     />
 
                     {/* Error message */}
@@ -215,8 +246,12 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                             variant="outlined"
                             sx={{
                                 mt: 2,
-                                borderRadius: "8px",
+                                borderRadius: "10px",
                                 fontSize: "13px",
+                                color: "#fecaca",
+                                borderColor: "rgba(248,113,113,0.5)",
+                                backgroundColor: "rgba(239,68,68,0.12)",
+                                "& .MuiAlert-icon": { color: "#f87171" },
                             }}
                         >
                             {error}
@@ -230,14 +265,23 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                         disabled={loading}
                         sx={{
                             mt: 3.5,
-                            py: 1.3,
-                            borderRadius: "8px",
+                            py: 1.35,
+                            borderRadius: "10px",
                             textTransform: "none",
                             fontSize: "15px",
                             fontWeight: 600,
-                            boxShadow: "none",
+                            color: "#ffffff",
+                            background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                            boxShadow: "0 6px 18px rgba(37, 99, 235, 0.35)",
+                            transition: "all 0.2s ease",
                             "&:hover": {
-                                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
+                                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                                boxShadow: "0 8px 22px rgba(37, 99, 235, 0.5)",
+                            },
+                            "&.Mui-disabled": {
+                                background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                                color: "#ffffff",
+                                opacity: 0.6,
                             },
                         }}
                         onClick={handleLogin}
@@ -255,7 +299,7 @@ const Login = ({ onLogin }: { onLogin: (token: string) => void }) => {
                         sx={{
                             display: "block",
                             textAlign: "center",
-                            color: "#94a3b8",
+                            color: "rgba(255,255,255,0.45)",
                             mt: 3,
                         }}
                     >

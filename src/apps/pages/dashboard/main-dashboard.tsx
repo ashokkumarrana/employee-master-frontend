@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import dayjs, { type Dayjs } from "dayjs";
 import { Box, Button, Card, CardContent, Typography, } from "@mui/material";
+import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlined";
+import TuneIcon from "@mui/icons-material/Tune";
+import SearchIcon from "@mui/icons-material/Search";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { useAppSelector } from "../hooks/useAppSelector";
 import StatusSummary from "../../components/common/StatusSummary";
@@ -16,6 +22,57 @@ import ReactDonutChart from "../../components/charts/reactcharts/ReactDonutChart
 import { fetchDepartmentEmployeeCounts, fetchEmployeeCounts, } from "../store/slices/employee-slice";
 import CommonDatePicker from "../../components/common/DatePicker";
 import EmployeeListModal from "../../components/common/EmployeeListModal";
+
+const cardSx = {
+    borderRadius: "12px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.06)",
+    mb: 2.5,
+};
+
+const BLUE_GRADIENT = "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)";
+
+interface SectionHeaderProps {
+    icon: ReactNode;
+    title: string;
+    description: string;
+}
+
+const SectionHeader = ({ icon, title, description }: SectionHeaderProps) => (
+    <Box
+        sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            pb: 2,
+            mb: 2,
+            borderBottom: "1px solid #e2e8f0",
+        }}>
+        <Box
+            sx={{
+                width: 38,
+                height: 38,
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "10px",
+                background: BLUE_GRADIENT,
+                color: "#ffffff",
+                boxShadow: "0 3px 8px rgba(37, 99, 235, 0.2)",
+            }}>
+            {icon}
+        </Box>
+        <Box sx={{ minWidth: 0 }}>
+            <Typography sx={{ fontSize: "16px", fontWeight: 700, color: "#1e293b", lineHeight: 1.3 }}>
+                {title}
+            </Typography>
+            <Typography sx={{ fontSize: "12.5px", color: "#64748b", lineHeight: 1.4 }}>
+                {description}
+            </Typography>
+        </Box>
+    </Box>
+);
 
 const Dashboard = () => {
     const dispatch = useAppDispatch();
@@ -127,22 +184,65 @@ const Dashboard = () => {
     ];
 
     return (
-        <Box sx={{ p: 2 }}>
-            {/* Dashboard header */}
-            <Box sx={{ mb: 2 }}>
-                <Typography variant="h5"
-                    sx={{ fontWeight: 700, color: "#17375E", }}>
-                    Employee Master Dashboard
-                </Typography>
-                <Typography variant="body2"
-                    sx={{ color: "text.secondary", mt: 0.5, }}>
-                    Employee analytics and performance overview
-                </Typography>
+        <Box sx={{ p: { xs: 1.5, sm: 2, md: 2.5 } }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    mb: 2,
+                    px: 2,
+                    py: 1.2,
+                    borderRadius: "12px",
+                    backgroundColor: "#eff6ff",
+                    border: "1px solid #bfdbfe",
+                }}
+            >
+                <Box
+                    sx={{
+                        width: 38,
+                        height: 38,
+                        flexShrink: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "10px",
+                        backgroundColor: "#2563eb",
+                        color: "#ffffff",
+                    }}>
+                    <SpaceDashboardOutlinedIcon sx={{ fontSize: 22 }} />
+                </Box>
+
+                <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            color: "#2563eb",
+                            lineHeight: 1.3,
+                            fontSize: { xs: "17px", sm: "20px" },
+                        }}>
+                        Employee Master Dashboard
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{ color: "#64748b", fontSize: "12.5px", lineHeight: 1.3 }}>
+                        Employee analytics and performance overview
+                    </Typography>
+                </Box>
             </Box>
+
             {/* Filter and summary section */}
-            <Card
-                sx={{ borderRadius: 2, boxShadow: 1, mb: 2, }}>
-                <CardContent>
+            <Card sx={cardSx}>
+                <CardContent sx={{ p: { xs: 2, sm: 2.5 }, "&:last-child": { pb: { xs: 2, sm: 2.5 } } }}>
+                    {/* Filters heading */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                        <TuneIcon sx={{ fontSize: 20, color: "#2563eb" }} />
+                        <Typography sx={{ fontSize: "15px", fontWeight: 700, color: "#1e293b" }}>
+                            Filters
+                        </Typography>
+                    </Box>
+
                     {/* Dashboard filters */}
                     <Box
                         sx={{
@@ -150,10 +250,10 @@ const Dashboard = () => {
                             gap: 2,
                             alignItems: "center",
                             flexWrap: "wrap",
-                            mb: 2,
+                            mb: 2.5,
                         }}>
 
-                        <Box sx={{ minWidth: 160, maxWidth: 180 }}>
+                        <Box sx={{ minWidth: 160, maxWidth: 200 }}>
                             <CommonDatePicker
                                 label="From Date"
                                 value={fromDate}
@@ -162,7 +262,7 @@ const Dashboard = () => {
                             />
                         </Box>
                         {/* To date filter */}
-                        <Box sx={{ minWidth: 160, maxWidth: 180 }}>
+                        <Box sx={{ minWidth: 160, maxWidth: 200 }}>
                             <CommonDatePicker
                                 label="To Date"
                                 value={toDate}
@@ -176,40 +276,59 @@ const Dashboard = () => {
                         <Box
                             sx={{
                                 display: "flex", gap: 1, alignSelf: "flex-end",
-                            }}                        >
-                            <Button variant="contained" onClick={handleSearch} > Search</Button>
-                            <Button variant="outlined" onClick={handleReset}>Reset</Button>
+                            }}>
+                            <Button
+                                variant="contained"
+                                startIcon={<SearchIcon />}
+                                onClick={handleSearch}
+                                sx={{
+                                    textTransform: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    px: 2.5,
+                                    boxShadow: "none",
+                                    "&:hover": { boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)" },
+                                }}
+                            >
+                                Search
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                startIcon={<RestartAltIcon />}
+                                onClick={handleReset}
+                                sx={{
+                                    textTransform: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    px: 2.5,
+                                }}
+                            >
+                                Reset
+                            </Button>
                         </Box>
                     </Box>
+
                     {/* Employee status summary */}
-                    <StatusSummary
-                        totalEmployees={totalEmployees}
-                        activeEmployees={activeEmployees}
-                        inactiveEmployees={inactiveEmployees}
-                        selectedStatus={status === "all" ? "" : status}
-                        clickable={false} />
+                    <Box sx={{ pt: 2.5, borderTop: "1px solid #e2e8f0" }}>
+                        <StatusSummary
+                            totalEmployees={totalEmployees}
+                            activeEmployees={activeEmployees}
+                            inactiveEmployees={inactiveEmployees}
+                            selectedStatus={status === "all" ? "" : status}
+                            clickable={false} />
+                    </Box>
 
                 </CardContent>
             </Card>
 
             {/* AmCharts dashboard section */}
-            <Card
-                sx={{ borderRadius: 2, boxShadow: 1, mb: 2, }}>
-                <CardContent>
-                    <Box
-                        sx={{
-                            mb: 2,
-                            textAlign: "center",
-                        }} >
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                color: "#526A68",
-                                mt: 0.3,
-                            }}>
-                            Employee analytics using AmCharts
-                        </Typography>
-                    </Box>
+            <Card sx={cardSx}>
+                <CardContent sx={{ p: { xs: 2, sm: 2.5 }, "&:last-child": { pb: { xs: 2, sm: 2.5 } } }}>
+                    <SectionHeader
+                        icon={<BarChartIcon sx={{ fontSize: 22 }} />}
+                        title="AmCharts Analytics"
+                        description="Employee analytics using AmCharts"
+                    />
                     <Box
                         sx={{
                             display: "grid",
@@ -317,17 +436,13 @@ const Dashboard = () => {
             </Card>
 
             {/* React Charts dashboard section */}
-            <Card
-                sx={{ borderRadius: 2, boxShadow: 1, mb: 2, }}>
-                <CardContent>
-                    <Box
-                        sx={{ mb: 2, textAlign: "center", }}>
-                        <Typography
-                            variant="body2"
-                            sx={{ color: "#526A68", mt: 0.3, }}>
-                            Employee analytics using React charts
-                        </Typography>
-                    </Box>
+            <Card sx={cardSx}>
+                <CardContent sx={{ p: { xs: 2, sm: 2.5 }, "&:last-child": { pb: { xs: 2, sm: 2.5 } } }}>
+                    <SectionHeader
+                        icon={<ShowChartIcon sx={{ fontSize: 22 }} />}
+                        title="React Charts Analytics"
+                        description="Employee analytics using React charts"
+                    />
 
                     <Box
                         sx={{

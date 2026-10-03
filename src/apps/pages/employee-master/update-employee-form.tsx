@@ -88,6 +88,8 @@ const initialFormData: EmployeeFormData = {
 const LANGUAGE_OPTIONS = ["Hindi", "English", "Arabic"];
 const skillOptions = ["Java", "React", "SQL", "Spring Boot", "Python"];
 const BLOOD_GROUP_OPTIONS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const UUID_PREFIX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_/i;
+const getDisplayFileName = (path: string | null) => (path?.split(/[\\/]/).pop() ?? "").replace(UUID_PREFIX, "");
 
 const inputSx = {
     width: "100%",
@@ -1106,7 +1108,7 @@ const UpdateEmployee = ({
                                             {formData.profileImage
                                                 ? formData.profileImage.name
                                                 : existingProfileImage
-                                                    ? existingProfileImage.split("/").pop()
+                                                    ? getDisplayFileName(existingProfileImage)
                                                     : "Upload Profile Image"}
                                             <input
                                                 hidden
@@ -1154,7 +1156,7 @@ const UpdateEmployee = ({
                                             {formData.documents
                                                 ? formData.documents.name
                                                 : existingDocuments
-                                                    ? existingDocuments.split("/").pop()
+                                                    ? getDisplayFileName(existingDocuments)
                                                     : "Upload Documents"}
                                             <input
                                                 hidden

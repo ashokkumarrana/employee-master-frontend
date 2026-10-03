@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import dayjs, { type Dayjs } from "dayjs";
-import { Box, Button, Chip, Collapse, FormControl, MenuItem, Select, Stack, TextField, Typography, } from "@mui/material";
+import { Box, Button, Chip, Collapse, FormControl, MenuItem, Select, Stack, TextField, Tooltip, Typography, } from "@mui/material";
 import TuneIcon from "@mui/icons-material/Tune";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -354,20 +354,23 @@ export default function EmployeeFilter({
                                             onClick={handleGlobalSearch}
                                             edge="end"
                                             size="small"
+                                            aria-label="search employee"
                                             sx={{
-                                                width: 34,
-                                                height: 34,
-                                                mr: 0.3,
-                                                borderRadius: "8px",
-                                                color: "#fff",
-                                                backgroundColor: "#2563eb",
-                                                transition: "background-color 0.15s ease",
+                                                width: 28,
+                                                height: 28,
+                                                mr: 0.2,
+                                                borderRadius: "7px",
+                                                color: "#2563eb",
+                                                backgroundColor: "#eff6ff",
+                                                border: "1px solid #bfdbfe",
+                                                transition: "all 0.15s ease",
                                                 "&:hover": {
-                                                    backgroundColor: "#1e3a8a",
+                                                    color: "#ffffff",
+                                                    backgroundColor: "#2563eb",
+                                                    borderColor: "#2563eb",
                                                 },
-                                            }}
-                                        >
-                                            <SearchIcon sx={{ fontSize: 18 }} />
+                                            }}>
+                                            <SearchIcon sx={{ fontSize: 17 }} />
                                         </IconButton>
                                     </InputAdornment>
                                 ),
@@ -646,25 +649,31 @@ export default function EmployeeFilter({
                         Results : {filteredTotal}
                     </Typography>
 
-                    <IconButton
-                        size="small"
-                        onClick={onDownloadClick}
-                        sx={{
-                            width: 32,
-                            height: 32,
-                            color: "#2563eb",
-                            backgroundColor: "#eff6ff",
-                            border: "1px solid #bfdbfe",
-                            borderRadius: "7px",
-                            transition: "all 0.2s ease",
-                            "&:hover": {
-                                backgroundColor: "#dbeafe",
-                                borderColor: "#93c5fd",
-                            },
-                        }}
-                    >
-                        <DownloadIcon sx={{ fontSize: 19 }} />
-                    </IconButton>
+                    {/* CHANGED: Tooltip add hua (hover pe "Download Employees" dikhega) */}
+                    <Tooltip title="Download Employees" arrow placement="top">
+                        <IconButton
+                            type="button"
+                            size="small"
+                            onClick={onDownloadClick}
+                            aria-label="download employees"
+                            sx={{
+                                width: 32,
+                                height: 32,
+                                color: "#2563eb",
+                                backgroundColor: "#eff6ff",
+                                border: "1px solid #bfdbfe",
+                                borderRadius: "7px",
+                                transition: "all 0.2s ease",
+                                "&:hover": {
+                                    color: "#ffffff",
+                                    backgroundColor: "#2563eb",
+                                    borderColor: "#2563eb",
+                                },
+                            }}
+                        >
+                            <DownloadIcon sx={{ fontSize: 19 }} />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
         </Box>

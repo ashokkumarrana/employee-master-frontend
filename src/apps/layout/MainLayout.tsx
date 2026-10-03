@@ -48,9 +48,9 @@ const MainLayout = ({ onLogout }: MainLayoutProps) => {
             <Box
                 sx={{
                     position: "relative",
-                    width: { xs: "100%", md: `calc(100% - ${sidebarWidth}px)`, },
+                    width: { xs: "100%", lg: `calc(100% - ${sidebarWidth}px)`, },
                     height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-                    ml: { xs: 0, md: `${sidebarWidth}px`, },
+                    ml: { xs: 0, lg: `${sidebarWidth}px`, },
                     mt: `${HEADER_HEIGHT}px`,
                     transition: "width 0.25s ease, margin-left 0.25s ease",
                     display: "flex",
