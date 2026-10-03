@@ -207,7 +207,7 @@ export const employeeValidationSchema = Yup.object({
         .nullable()
         .test(
             "fileType",
-            "Only PDF, DOC, DOCX, XLS, and XLSX files are allowed",
+            "Only PDF, DOCX, XLSX, PNG, and JPG files are allowed",
             (file) => {
                 if (!file) {
                     return true;
@@ -215,10 +215,10 @@ export const employeeValidationSchema = Yup.object({
 
                 return [
                     "application/pdf",
-                    "application/msword",
                     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    "application/vnd.ms-excel",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "image/png",
+                    "image/jpeg",
                 ].includes(file.type);
             }
         )

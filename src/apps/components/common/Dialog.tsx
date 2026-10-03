@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import {
     Dialog,
     DialogContent,
@@ -6,7 +7,6 @@ import {
     type DialogProps,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import type { ReactNode } from "react";
 
 interface EmployeeDialogProps {
     open: boolean;
@@ -23,6 +23,18 @@ const EmployeeDialog = ({
     title,
     maxWidth = "lg",
 }: EmployeeDialogProps) => {
+    const wasOpen = useRef(open);
+
+    useLayoutEffect(() => {
+        if (wasOpen.current && !open) {
+            const active = document.activeElement;
+            if (active instanceof HTMLElement && active.closest(".MuiDialog-root")) {
+                active.blur();
+            }
+        }
+        wasOpen.current = open;
+    }, [open]);
+
     return (
         <Dialog
             open={open}
@@ -79,12 +91,7 @@ const EmployeeDialog = ({
             )}
 
             <DialogContent
-                sx={{
-                    p: {
-                        xs: 2,
-                        sm: 2.5,
-                    },
-                }}
+                sx={{ p: { xs: 2, sm: 2.5, }, }}
             >
                 {children}
             </DialogContent>

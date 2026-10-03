@@ -12,11 +12,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
 import DatePicker from "../../components/common/DatePicker";
 import { employeeValidationSchema } from "./employee-validation";
 import ResponseDialog from "../../components/common/ResponseDialog";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import type { Dropdown, EmployeeFormData, EmployeeRequest } from "./employeeTypes";
+import { reportingManagerList, type Dropdown, type EmployeeFormData, type EmployeeRequest } from "./employeeTypes";
 import { saveEmployee } from "../store/slices/employee-slice";
 import { useArrayForm } from "../../components/common/useArrayForm";
 import { uploadEmployeeAttachments } from "./employeeApi";
@@ -87,10 +88,20 @@ const inputSx = {
 };
 
 const sectionTitleSx = {
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
     fontSize: "14px",
     fontWeight: 700,
     color: "#1e293b",
     mb: 1.5,
+    "&::before": {
+        content: '""',
+        width: 4,
+        height: 18,
+        borderRadius: "4px",
+        backgroundColor: "#2563eb",
+    },
 };
 
 const cardSx = {
@@ -249,6 +260,7 @@ const AddEmployee = ({
                 try {
                     await uploadEmployeeAttachments(attachmentsToUpload);
                 } catch {
+                    await onSaveSuccess?.();
                     setResponseDialog({
                         open: true,
                         success: true,
@@ -279,23 +291,58 @@ const AddEmployee = ({
                         alignItems: "center",
                         justifyContent: "space-between",
                         gap: 2,
-                        mb: 2,
+                        mb: 2.5,
+                        p: { xs: 1.5, sm: 2 },
                         flexWrap: "wrap",
-                    }}
-                >
-                    <Box>
-                        <Typography
+                        borderRadius: "10px",
+                        border: "1px solid #dbe3ef",
+                        background: "linear-gradient(90deg, #eff6ff 0%, #ffffff 100%)",
+                    }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Box
                             sx={{
-                                fontSize: { xs: "19px", sm: "21px", md: "23px" },
-                                fontWeight: 700,
-                                color: "#1e293b",
-                            }}
-                        >
-                            Add Employees
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px", color: "#64748b", mt: 0.3 }}>
-                            Create one or multiple employee records
-                        </Typography>
+                                width: 44,
+                                height: 44,
+                                flexShrink: 0,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: "10px",
+                                backgroundColor: "#2563eb",
+                                color: "#ffffff",
+                                boxShadow: "0 4px 10px rgba(37,99,235,0.25)",
+                            }}>
+                            <PersonAddAltOutlinedIcon sx={{ fontSize: 24 }} />
+                        </Box>
+                        <Box>
+                            <Typography
+                                sx={{
+                                    fontSize: { xs: "18px", sm: "20px", md: "22px" },
+                                    fontWeight: 700,
+                                    color: "#1e293b",
+                                    lineHeight: 1.25,
+                                }}>
+                                Add Employees
+                            </Typography>
+                            <Typography sx={{ fontSize: "12px", color: "#64748b", mt: 0.3 }}>
+                                Create one or multiple employee records
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    <Box
+                        sx={{
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "999px",
+                            backgroundColor: "#dbeafe",
+                            color: "#1d4ed8",
+                            fontSize: "12px",
+                            fontWeight: 700,
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        {employees.length === 1 ? "Employee" : `${employees.length} Employees`}
                     </Box>
                 </Box>
 
@@ -435,8 +482,7 @@ const AddEmployee = ({
                                                     value={formData.departmentId}
                                                     label="Department"
                                                     onChange={(e) => handleSelectChange(index, e, numericSelectFields)}
-                                                    onBlur={(e) => handleSelectBlur(index, e)}
-                                                >
+                                                    onBlur={(e) => handleSelectBlur(index, e)}>
                                                     <MenuItem value="">Select Department</MenuItem>
                                                     {departments.map((department) => (
                                                         <MenuItem key={department.id} value={department.id}>
@@ -455,8 +501,7 @@ const AddEmployee = ({
                                                     value={formData.designationId}
                                                     label="Designation"
                                                     onChange={(e) => handleSelectChange(index, e, numericSelectFields)}
-                                                    onBlur={(e) => handleSelectBlur(index, e)}
-                                                >
+                                                    onBlur={(e) => handleSelectBlur(index, e)}>
                                                     <MenuItem value="">Select Designation</MenuItem>
                                                     {designations.map((designation) => (
                                                         <MenuItem key={designation.id} value={designation.id}>
@@ -468,36 +513,25 @@ const AddEmployee = ({
                                             </FormControl>
                                         </Grid>
                                         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                            <Autocomplete
-                                                fullWidth
-                                                options={[
-                                                    { id: 1, name: "Rahul Sharma" },
-                                                    { id: 2, name: "Amit Kumar" },
-                                                    { id: 3, name: "Priya Singh" },
-                                                    { id: 4, name: "Neha Verma" },
-                                                ]}
-                                                getOptionLabel={(option) => option.name}
-                                                value={
-                                                    [
-                                                        { id: 1, name: "Rahul Sharma" },
-                                                        { id: 2, name: "Amit Kumar" },
-                                                        { id: 3, name: "Priya Singh" },
-                                                        { id: 4, name: "Neha Verma" },
-                                                    ].find((employee) => employee.id === formData.reportingManager) || null
-                                                }
-                                                onChange={(_, selectedEmployee) => {
-                                                    setFieldValue(index, "reportingManager", selectedEmployee ? selectedEmployee.id : null);
-                                                }}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        label="Reporting Manager"
-                                                        error={!!employeeErrors.reportingManager}
-                                                        helperText={employeeErrors.reportingManager}
-                                                        sx={inputSx}
-                                                    />
-                                                )}
-                                            />
+                                            <FormControl fullWidth error={!!employeeErrors.reportingManager} sx={inputSx}>
+                                                <InputLabel>Reporting Manager</InputLabel>
+                                                <Select
+                                                    name="reportingManager"
+                                                    value={formData.reportingManager ?? ""}
+                                                    label="Reporting Manager"
+                                                    onChange={(e) => {
+                                                        const value = e.target.value as number | "";
+                                                        setFieldValue(index, "reportingManager", value === "" ? null : Number(value));
+                                                    }}>
+                                                    <MenuItem value="">Select Manager</MenuItem>
+                                                    {reportingManagerList.map((manager) => (
+                                                        <MenuItem key={manager.id} value={manager.id}>
+                                                            {manager.name}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                                <FormHelperText>{employeeErrors.reportingManager}</FormHelperText>
+                                            </FormControl>
                                         </Grid>
                                         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                             <FormControl fullWidth required error={!!employeeErrors.employeeType} sx={inputSx}>
@@ -507,8 +541,7 @@ const AddEmployee = ({
                                                     value={formData.employeeType}
                                                     label="Employee Type"
                                                     onChange={(e) => handleSelectChange(index, e)}
-                                                    onBlur={(e) => handleSelectBlur(index, e)}
-                                                >
+                                                    onBlur={(e) => handleSelectBlur(index, e)}>
                                                     <MenuItem value="">Select Type</MenuItem>
                                                     <MenuItem value="Permanent">Permanent</MenuItem>
                                                     <MenuItem value="Contract">Contract</MenuItem>
@@ -525,8 +558,7 @@ const AddEmployee = ({
                                                     value={formData.gender}
                                                     label="Gender"
                                                     onChange={(e) => handleSelectChange(index, e)}
-                                                    onBlur={(e) => handleSelectBlur(index, e)}
-                                                >
+                                                    onBlur={(e) => handleSelectBlur(index, e)}>
                                                     <MenuItem value="">Select Gender </MenuItem>
                                                     <MenuItem value="Male">Male</MenuItem>
                                                     <MenuItem value="Female">Female</MenuItem>
@@ -544,8 +576,7 @@ const AddEmployee = ({
                                                     value={formData.maritalStatus}
                                                     label="Marital Status"
                                                     onChange={(e) => handleSelectChange(index, e)}
-                                                    onBlur={(e) => handleSelectBlur(index, e)}
-                                                >
+                                                    onBlur={(e) => handleSelectBlur(index, e)}>
                                                     <MenuItem value="">Select Status</MenuItem>
                                                     <MenuItem value="Married">Married</MenuItem>
                                                     <MenuItem value="Unmarried">Unmarried</MenuItem>
@@ -770,9 +801,8 @@ const AddEmployee = ({
                                                     name="bloodGroup"
                                                     value={formData.bloodGroup}
                                                     label="Blood Group"
-                                                    onChange={(e) => handleSelectChange(index, e)}
-                                                >
-                                                    <MenuItem value=""></MenuItem>
+                                                    onChange={(e) => handleSelectChange(index, e)}>
+                                                    <MenuItem value="">Select Blood Group</MenuItem>
                                                     <MenuItem value="A+">A+</MenuItem>
                                                     <MenuItem value="A-">A-</MenuItem>
                                                     <MenuItem value="B+">B+</MenuItem>
@@ -838,19 +868,16 @@ const AddEmployee = ({
                                                     setFieldValue(index, "skills", updatedSkills);
                                                 }}
                                                 renderOption={(props, option) => {
+                                                    const { key, ...optionProps } = props;
                                                     const isSelectAll = option === "Select All";
                                                     const allSelected = formData.skills.length === skillOptions.length;
                                                     return (
-                                                        <li {...props}>
+                                                        <li key={key} {...optionProps}>
                                                             <Checkbox
                                                                 size="small"
-                                                                checked={
-                                                                    isSelectAll
-                                                                        ? allSelected
-                                                                        : formData.skills.includes(option)
+                                                                checked={isSelectAll ? allSelected : formData.skills.includes(option)
                                                                 }
-                                                                sx={{ mr: 1 }}
-                                                            />
+                                                                sx={{ mr: 1 }} />
                                                             {option}
                                                         </li>
                                                     );
@@ -921,9 +948,9 @@ const AddEmployee = ({
                                                     </IconButton>
                                                 )}
                                             </Box>
-                                            {employeeErrors.profileImage && (
-                                                <FormHelperText error>{employeeErrors.profileImage}</FormHelperText>
-                                            )}
+                                            <FormHelperText error={!!employeeErrors.profileImage} sx={{ ml: "14px", mt: 0.5 }}>
+                                                {employeeErrors.profileImage || "Allowed: JPG, JPEG, PNG (max 5 MB)"}
+                                            </FormHelperText>
                                         </Grid>
 
                                         {/* Documents */}
@@ -966,9 +993,9 @@ const AddEmployee = ({
                                                     </IconButton>
                                                 )}
                                             </Box>
-                                            {employeeErrors.documents && (
-                                                <FormHelperText error>{employeeErrors.documents}</FormHelperText>
-                                            )}
+                                            <FormHelperText error={!!employeeErrors.documents} sx={{ ml: "14px", mt: 0.5 }}>
+                                                {employeeErrors.documents || "Allowed: PDF, DOCX, XLSX, PNG, JPG (max 20 MB)"}
+                                            </FormHelperText>
                                         </Grid>
 
                                         {/* Remarks */}

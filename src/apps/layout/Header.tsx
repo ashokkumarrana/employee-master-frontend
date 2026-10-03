@@ -36,10 +36,14 @@ const Header = ({ onMenuClick, onLogout }: HeaderProps) => {
     const userInitial = userName.trim().charAt(0).toUpperCase() || "U";
 
     const handleProfileClick = (event: MouseEvent<HTMLElement>) => {
+        event.currentTarget.blur();
         setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = () => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
         setAnchorEl(null);
     };
 
@@ -75,7 +79,10 @@ const Header = ({ onMenuClick, onLogout }: HeaderProps) => {
             >
                 {/* MENU BUTTON */}
                 <IconButton
-                    onClick={onMenuClick}
+                    onClick={(event) => {
+                        event.currentTarget.blur();
+                        onMenuClick();
+                    }}
                     edge="start"
                     sx={{
                         width: 42,

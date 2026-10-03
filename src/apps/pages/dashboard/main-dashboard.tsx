@@ -53,6 +53,9 @@ const Dashboard = () => {
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
 
     const handleDeptRowClick = (row: Record<string, any>) => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
         setSelectedDept({ id: row.id, name: row.name });
         setShowEmployeeModal(true);
     };

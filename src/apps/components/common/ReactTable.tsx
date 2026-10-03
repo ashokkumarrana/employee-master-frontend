@@ -33,11 +33,12 @@ interface EmployeeTableProps<T> {
     onSortChange: (column: string) => void;
     emptyMessage?: string;
     topContent?: ReactNode;
+    onRowClick?: (row: T) => void;
 }
 
 const HEADER_BG = "#e8f1ff";
 const APP_HEADER_HEIGHT = 64;
-const APP_FOOTER_HEIGHT = 42;
+const APP_FOOTER_HEIGHT = 34;
 
 const ReactTable = <T,>({
     columns,
@@ -52,6 +53,7 @@ const ReactTable = <T,>({
     onSortChange,
     emptyMessage = "No employees found",
     topContent,
+    onRowClick,
 }: EmployeeTableProps<T>) => {
     return (
         <Paper
@@ -112,18 +114,19 @@ const ReactTable = <T,>({
                         >
                             {columns.map((column) => {
                                 const columnId = String(column.id);
+                                const align = column.align ?? "center";
                                 const isActions = columnId === "actions";
                                 const isSorted = sortBy === columnId;
                                 const isSortable = !isActions && column.sortable !== false;
                                 return (
                                     <TableCell
                                         key={columnId}
-                                        align={column.align ?? "left"}
+                                        align={align}
                                         sx={{
-                                            width: column.minWidth ? `${column.minWidth}px` : "auto",
-                                            minWidth: column.minWidth ? `${column.minWidth}px` : 0,
+                                            width: isActions ? "1%" : column.minWidth ? `${column.minWidth}px` : "auto",
+                                            minWidth: isActions ? 0 : column.minWidth ? `${column.minWidth}px` : 0,
                                             py: 1,
-                                            px: 1.5,
+                                            px: isActions ? 1 : 1.5,
                                             position: "sticky",
                                             top: 0,
                                             backgroundColor: HEADER_BG,
@@ -149,7 +152,7 @@ const ReactTable = <T,>({
                                             sx={{
                                                 display: "flex",
                                                 alignItems: "center",
-                                                justifyContent: column.align === "center" ? "center" : column.align === "right" ? "flex-end" : "flex-start",
+                                                justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
                                                 gap: 0.5,
                                                 cursor: isSortable ? "pointer" : "default",
                                                 userSelect: "none",
@@ -208,31 +211,32 @@ const ReactTable = <T,>({
                                 <TableRow
                                     hover
                                     key={rowIndex}
+                                    onClick={() => onRowClick?.(row)}
                                     sx={{
-                                        height: 50,
-                                        cursor: "pointer",
+                                        height: 40,
+                                        cursor: onRowClick ? "pointer" : "default",
                                         transition: "background-color 0.15s ease",
                                         "&:hover td": { backgroundColor: "#eff6ff", },
                                         "&:last-child td": { borderBottom: 0, },
-                                    }}
-                                >
+                                    }}>
                                     {columns.map((column) => {
                                         const isActions = String(column.id) === "actions";
+                                        const align = column.align ?? "center";
                                         return (
                                             <TableCell
                                                 key={String(column.id)}
-                                                align={column.align ?? "left"}
+                                                align={align}
                                                 sx={{
-                                                    width: column.minWidth ? `${column.minWidth}px` : "auto",
-                                                    minWidth: column.minWidth ? `${column.minWidth}px` : 0,
-                                                    py: 1,
-                                                    px: 1.5,
+                                                    width: isActions ? "1%" : column.minWidth ? `${column.minWidth}px` : "auto",
+                                                    minWidth: isActions ? 0 : column.minWidth ? `${column.minWidth}px` : 0,
+                                                    py: isActions ? 0.5 : 1,
+                                                    px: isActions ? 1 : 1.5,
                                                     fontSize: "12.5px",
                                                     lineHeight: 1.3,
                                                     color: "#334155",
-                                                    whiteSpace: "normal",
-                                                    wordBreak: "break-word",
-                                                    overflowWrap: "anywhere",
+                                                    whiteSpace: isActions ? "nowrap" : "normal",
+                                                    wordBreak: isActions ? "normal" : "break-word",
+                                                    overflowWrap: isActions ? "normal" : "anywhere",
                                                     borderBottom: "1px solid #eef2f7",
                                                     backgroundColor: "#fff",
                                                     transition: "background-color 0.15s ease",
@@ -243,10 +247,35 @@ const ReactTable = <T,>({
                                                         backgroundColor: "#fff",
                                                         boxShadow: "4px 0 8px rgba(15,23,42,0.10)",
                                                     }),
-                                                }}
-                                            >
-                                                {column.render
-                                                    ? column.render(row) : String(row[column.id as keyof T] ?? "").trim() || "N/A"}
+                                                }}>
+                                                {column.render ? (
+                                                    isActions ? (
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                flexDirection: "row",
+                                                                flexWrap: "nowrap",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                gap: 0.25,
+                                                                "& .MuiIconButton-root": { p: 0.5, },
+                                                                "& .MuiSvgIcon-root": { fontSize: 18, },
+                                                                "& .MuiButton-root": {
+                                                                    minWidth: 0,
+                                                                    py: 0.2,
+                                                                    px: 1,
+                                                                    fontSize: "11px",
+                                                                    lineHeight: 1.2,
+                                                                },
+                                                            }}>
+                                                            {column.render(row)}
+                                                        </Box>
+                                                    ) : (
+                                                        column.render(row)
+                                                    )
+                                                ) : (
+                                                    String(row[column.id as keyof T] ?? "").trim() || "N/A"
+                                                )}
                                             </TableCell>
                                         );
                                     })}
@@ -296,8 +325,10 @@ const ReactTable = <T,>({
                     ".MuiTablePagination-input": {
                         ml: 1,
                         mr: 1,
+                        width: 45,
+                        height: 30,
                         border: "1px solid #dbe3ef",
-                        borderRadius: "8px",
+                        borderRadius: "6px",
                         backgroundColor: "#fff",
                         transition: "all 0.15s ease",
                         "&:hover": { borderColor: "#93c5fd", backgroundColor: "#eff6ff", },

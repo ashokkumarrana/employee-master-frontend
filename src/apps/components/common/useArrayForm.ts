@@ -118,7 +118,7 @@ export function useArrayForm<T extends object>({
 
     const handleSelectBlur = handleBlur;
 
-    const handleFileChange = (
+    const handleFileChange = async (
         index: number,
         event: ChangeEvent<HTMLInputElement>,
         allowedFields: (keyof T)[]
@@ -128,16 +128,27 @@ export function useArrayForm<T extends object>({
         const fieldName = name as keyof T;
         if (!allowedFields.includes(fieldName)) return;
         const selectedFile = files[0];
+        event.target.value = "";
 
         setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [fieldName]: selectedFile } : item)));
-        setErrors((prev) =>
-            prev.map((error, i) => {
-                if (i !== index) return error;
-                const updated = { ...error };
-                delete updated[fieldName];
-                return updated;
-            })
-        );
+
+        try {
+            await validationSchema.validateAt(String(fieldName), { ...items[index], [fieldName]: selectedFile });
+            setErrors((prev) =>
+                prev.map((error, i) => {
+                    if (i !== index) return error;
+                    const updated = { ...error };
+                    delete updated[fieldName];
+                    return updated;
+                })
+            );
+        } catch (error) {
+            if (error instanceof Yup.ValidationError) {
+                setErrors((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, [fieldName]: error.message } : item))
+                );
+            }
+        }
     };
 
     const handleRemoveFile = (index: number, field: keyof T) => {

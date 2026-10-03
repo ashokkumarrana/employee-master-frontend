@@ -11,7 +11,7 @@ import EmployeeDialog from "../../components/common/Dialog";
 import ExcelUpload, { type ExcelUploadResponse } from "../../components/common/ExcelUpload";
 import AddEmployee from "./add-employee-array-form";
 import UpdateEmployee from "./update-employee-form";
-import type { Dropdown, Employee, EmployeeFilterValues } from "./employeeTypes";
+import { getReportingManagerName, type Dropdown, type Employee, type EmployeeFilterValues } from "./employeeTypes";
 import { getDepartments, getDesignations, getStates, getCountries, uploadEmployeeExcel, getCities, downloadEmployeeTemplate, downloadEmployeeAttachment } from "./employeeApi";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { useAppSelector } from "../hooks/useAppSelector";
@@ -140,17 +140,25 @@ const EmployeeActivityBoard = () => {
                 setCountries(countryResponse.data);
                 setCities(cityResponse.data);
             } catch (error) {
-                console.error("Failed to load dropdowns", error);
+                console.error(error);
             }
         };
         loadDropdowns();
     }, []);
 
+    const blurActiveElement = () => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    };
+
     const handleOpenArrayForm = () => {
+        blurActiveElement();
         setShowArrayForm(true);
     };
 
     const handleOpenExcelUpload = () => {
+        blurActiveElement();
         setExcelDialogOpen(true);
     };
 
@@ -243,7 +251,7 @@ const EmployeeActivityBoard = () => {
         if (hardRefreshing) return;
         setHardRefreshing(true);
         setResetSignal((s) => s + 1);
-        setHardRefreshing(false);
+        setTimeout(() => setHardRefreshing(false), 1000);
     };
 
     const handleReset = () => {
@@ -270,11 +278,13 @@ const EmployeeActivityBoard = () => {
     };
 
     const handleDelete = (row: Employee) => {
+        blurActiveElement();
         setSelectedEmployee(row);
         setDeleteDialogOpen(true);
     };
 
     const handleOpenHistory = (row: Employee) => {
+        blurActiveElement();
         setHistoryEmployee(row);
         setHistoryOpen(true);
     };
@@ -345,7 +355,7 @@ const EmployeeActivityBoard = () => {
             link.remove();
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("Failed to download attachment:", error);
+            console.error(error);
         }
     };
     const columns: EmployeeTableColumn<Employee>[] = [
@@ -432,7 +442,7 @@ const EmployeeActivityBoard = () => {
             id: "reportingManager",
             label: "Reporting Manager",
             minWidth: 140,
-            render: (row) => row.reportingManager ?? "N/A",
+            render: (row) => getReportingManagerName(row.reportingManager),
         },
         {
             id: "maritalStatus",
@@ -597,48 +607,7 @@ const EmployeeActivityBoard = () => {
                 <>
                     <Box sx={{ width: "100%", minWidth: 0 }}>
                         {/* Heading */}
-                        {/* <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "left",
-                                alignItems: "left",
-                                mb: 3,
-                                gap: 1.2,
-                                cursor: "default",
-                                transition: "all 0.25s ease",
-                                "&:hover .heading-icon": { backgroundColor: "#2563eb", color: "#fff", transform: "scale(1.08)", },
-                                "&:hover .heading-text": { color: "#2563eb", },
-                            }}
-                        >
-                            <Box
-                                className="heading-icon"
-                                sx={{
-                                    width: 38,
-                                    height: 38,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    borderRadius: "10px",
-                                    backgroundColor: "#eff6ff",
-                                    color: "#2563eb",
-                                    transition: "all 0.25s ease",
-                                }}
-                            >
-                                <PeopleAltOutlinedIcon sx={{ fontSize: 23 }} />
-                            </Box>
-                            <Typography
-                                component="h2"
-                                className="heading-text"
-                                sx={{
-                                    fontSize: { xs: "20px", sm: "22px", md: "24px", },
-                                    fontWeight: 700,
-                                    color: "#334155",
-                                    letterSpacing: "0.2px",
-                                    transition: "color 0.25s ease",
-                                }}>
-                                Employee Master Activity Board
-                            </Typography>
-                        </Box> */}
+
                         <Box
                             sx={{
                                 display: "flex",
@@ -646,8 +615,7 @@ const EmployeeActivityBoard = () => {
                                 alignItems: "center",
                                 mb: 3,
                                 cursor: "default",
-                            }}
-                        >
+                            }}>
                             <Box
                                 sx={{
                                     display: "flex",
@@ -682,8 +650,7 @@ const EmployeeActivityBoard = () => {
                                         fontWeight: 700,
                                         color: "#2563eb",
                                         letterSpacing: "0.2px",
-                                    }}
-                                >
+                                    }}>
                                     Employee Master Activity Board
                                 </Typography>
                             </Box>
@@ -735,7 +702,10 @@ const EmployeeActivityBoard = () => {
                                     filteredTotal={totalElements}
                                     countMode={countMode}
                                     onCountModeChange={setCountMode}
-                                    onDownloadClick={() => setDownloadDialogOpen(true)}
+                                    onDownloadClick={() => {
+                                        blurActiveElement();
+                                        setDownloadDialogOpen(true);
+                                    }}
                                     resetSignal={resetSignal}
                                 />
                             </Box>
@@ -864,7 +834,7 @@ const EmployeeActivityBoard = () => {
                         open={Boolean(excelSuccessMessage)}
                         autoHideDuration={4000}
                         onClose={() => setExcelSuccessMessage("")}
-                        anchorOrigin={{ vertical: "bottom", horizontal: "center", }}>
+                        anchorOrigin={{ vertical: "bottom", horizontal: "right", }}>
                         <Alert
                             severity="success"
                             variant="filled"

@@ -239,3 +239,12 @@ export interface EmployeeExcelDownloadSummary {
     attachmentContent?: string;
     isRead: boolean;
 }
+export const reportingManagerList = [
+    { id: 1, name: "Rahul Sharma" },
+    { id: 2, name: "Amit Kumar" },
+    { id: 3, name: "Priya Singh" },
+    { id: 4, name: "Neha Verma" },
+];
+
+export const getReportingManagerName = (id?: number | string | null) =>
+    reportingManagerList.find((manager) => manager.id === Number(id))?.name || "N/A";

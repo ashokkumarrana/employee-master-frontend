@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import {
     Box,
@@ -7,14 +7,8 @@ import {
     ToggleButton,
     ToggleButtonGroup,
     Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
 } from "@mui/material";
+import ReactTable, { type EmployeeTableColumn } from "../common/ReactTable";
 
 interface ChartColumn {
     key: string;
@@ -29,6 +23,8 @@ interface ChartCardProps {
     onRowClick?: (row: Record<string, any>) => void;
 }
 
+type ChartRow = Record<string, any>;
+
 const ChartCard = ({
     title,
     description,
@@ -38,6 +34,45 @@ const ChartCard = ({
     onRowClick,
 }: ChartCardProps) => {
     const [view, setView] = useState<"graph" | "table">("graph");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [sortBy, setSortBy] = useState("");
+    const [direction, setDirection] = useState<"asc" | "desc">("asc");
+
+    const tableColumns: EmployeeTableColumn<ChartRow>[] = columns.map((column) => ({
+        id: column.key,
+        label: column.label,
+    }));
+
+    const sortedData = useMemo(() => {
+        if (!sortBy) {
+            return data;
+        }
+        return [...data].sort((a, b) => {
+            const first = a[sortBy];
+            const second = b[sortBy];
+            const result =
+                typeof first === "number" && typeof second === "number"
+                    ? first - second
+                    : String(first ?? "").localeCompare(String(second ?? ""), undefined, { numeric: true });
+            return direction === "asc" ? result : -result;
+        });
+    }, [data, sortBy, direction]);
+
+    const lastPage = Math.max(0, Math.ceil(sortedData.length / rowsPerPage) - 1);
+    const currentPage = Math.min(page, lastPage);
+    const pagedRows = sortedData.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
+
+    const handleSortChange = (columnId: string) => {
+        if (sortBy === columnId) {
+            setDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+        } else {
+            setSortBy(columnId);
+            setDirection("asc");
+        }
+        setPage(0);
+    };
+
     return (
         <Card
             variant="outlined"
@@ -135,98 +170,33 @@ const ChartCard = ({
                 {/* ================= TABLE ================= */}
 
                 {view === "table" && (
-                    <TableContainer
-                        component={Paper}
-                        variant="outlined"
+                    <Box
                         sx={{
-                            borderRadius: 1.5,
-                            maxHeight: 300,
-                            overflow: "auto",
-                            border: "1px solid #D5E5E2",
-                            boxShadow: "0 2px 8px rgba(15, 23, 42, 0.05)",
+                            "& .MuiPaper-root": {
+                                position: "static !important",
+                                top: "auto !important",
+                                maxHeight: "400px !important",
+                            },
                         }}
                     >
-                        <Table
-                            size="small"
-                            stickyHeader
-                            sx={{
-                                "& .MuiTableCell-root": {
-                                    borderBottom: "1px solid #DCE7E5",
-                                },
+                        <ReactTable
+                            columns={tableColumns}
+                            rows={pagedRows}
+                            page={currentPage}
+                            rowsPerPage={rowsPerPage}
+                            totalCount={sortedData.length}
+                            sortBy={sortBy}
+                            direction={direction}
+                            onPageChange={(_e, newPage) => setPage(newPage)}
+                            onRowsPerPageChange={(e) => {
+                                setRowsPerPage(Number(e.target.value));
+                                setPage(0);
                             }}
-                        >
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.key}
-                                            sx={{
-                                                fontWeight: 700,
-                                                fontSize: "12px",
-                                                color: "#FFFFFF",
-                                                backgroundColor: "#145A54",
-                                                whiteSpace: "nowrap",
-                                                textTransform: "uppercase",
-                                                letterSpacing: "0.5px",
-                                                py: 1.5,
-                                                px: 2,
-                                            }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {data.length > 0 ? (
-                                    data.map((row, index) => (
-                                        <TableRow
-                                            key={index}
-                                            hover
-                                            onClick={() => onRowClick?.(row)}
-                                            sx={{
-                                                cursor: onRowClick ? "pointer" : "default",
-                                                backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#F3F8F7",
-                                                "&:hover": { backgroundColor: "#E4F1EF", },
-                                                transition: "background-color 0.2s ease",
-                                            }}
-                                        >
-                                            {columns.map((column) => (
-                                                <TableCell
-                                                    key={column.key}
-                                                    sx={{
-                                                        whiteSpace: "nowrap",
-                                                        fontSize: "13px",
-                                                        color: "#334155",
-                                                        fontWeight: column.key === "name" ? 600 : 500,
-                                                        py: 1.4,
-                                                        px: 2,
-                                                    }}
-                                                >
-                                                    {row[column.key]}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={columns.length}
-                                            align="center"
-                                            sx={{
-                                                py: 3,
-                                                color: "#64748B",
-                                                fontSize: "13px",
-                                            }}
-                                        >
-                                            No data available
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                            onSortChange={handleSortChange}
+                            onRowClick={onRowClick}
+                            emptyMessage="No data available"
+                        />
+                    </Box>
                 )}
             </CardContent>
         </Card>

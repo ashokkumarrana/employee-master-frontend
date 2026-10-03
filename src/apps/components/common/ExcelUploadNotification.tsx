@@ -62,6 +62,12 @@ const formatDateTime = (date: string) =>
         hour12: true,
     });
 
+const blurActiveElement = () => {
+    if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
+};
+
 const ExcelUploadNotification = () => {
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -92,6 +98,7 @@ const ExcelUploadNotification = () => {
     const currentItems = merged.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
     const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.currentTarget.blur();
         setAnchorEl(event.currentTarget);
         if (uploadHistory.some((upload) => !upload.isRead)) {
             dispatch(markExcelUploadNotificationsRead());
@@ -101,15 +108,20 @@ const ExcelUploadNotification = () => {
         }
     };
 
-    const handleClose = () => setAnchorEl(null);
+    const handleClose = () => {
+        blurActiveElement();
+        setAnchorEl(null);
+    };
 
     const handleItemClick = (item: MergedItem) => {
+        blurActiveElement();
         setSelectedItem(item);
         setDetailOpen(true);
         setAnchorEl(null);
     };
 
     const handleDetailClose = () => {
+        blurActiveElement();
         setDetailOpen(false);
         setSelectedItem(null);
     };
@@ -243,7 +255,7 @@ const ExcelUploadNotification = () => {
                                 const { Icon, color, bg } = getUploadStatus(item.data);
                                 return (
                                     <Box
-                                        key={item.data.id}
+                                        key={`${item.kind}-${item.data.id}`}
                                         onClick={() => handleItemClick(item)}
                                         sx={{
                                             px: 2,
@@ -288,7 +300,7 @@ const ExcelUploadNotification = () => {
                             }
                             return (
                                 <Box
-                                    key={item.data.id}
+                                    key={`${item.kind}-${item.data.id}`}
                                     onClick={() => handleItemClick(item)}
                                     sx={{
                                         px: 2,

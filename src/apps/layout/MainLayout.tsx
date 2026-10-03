@@ -15,7 +15,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ onLogout }: MainLayoutProps) => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activePage, setActivePage] = useState("dashboard");
 
     const handleMenuClick = () => {

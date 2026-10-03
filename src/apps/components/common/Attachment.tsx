@@ -193,7 +193,7 @@ export const AttachmentDownloadButton = ({
             const url = window.URL.createObjectURL(blob);
             setPreviewUrl(url);
         } catch (err) {
-            console.error("Failed to load preview:", err);
+            console.error(err);
             setPreviewError("Unable to load preview.");
         } finally {
             setPreviewLoading(false);

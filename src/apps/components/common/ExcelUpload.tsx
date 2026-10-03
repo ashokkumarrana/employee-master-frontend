@@ -624,8 +624,7 @@ const ExcelUpload = ({
                                     }}
                                     onKeyDown={(event) => {
                                         if (
-                                            event.key === "Enter" ||
-                                            event.key === " "
+                                            event.key === "Enter" || event.key === " "
                                         ) {
                                             setSelectedCard(card.key);
                                             setIncorrectPage(0);
@@ -634,13 +633,9 @@ const ExcelUpload = ({
                                     sx={{
                                         width: "100%",
                                         minWidth: 0,
-                                        minHeight: {
-                                            xs: 82,
-                                            sm: 96,
-                                        },
+                                        minHeight: { xs: 82, sm: 96, },
                                         borderRadius: 1.5,
-                                        backgroundColor:
-                                            card.background,
+                                        backgroundColor: card.background,
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",

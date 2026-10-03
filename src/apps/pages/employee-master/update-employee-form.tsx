@@ -31,11 +31,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import DatePicker from "../../components/common/DatePicker";
 import { employeeValidationSchema } from "./employee-validation";
 import FormActionButtons from "../../components/common/FormActionButtons";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import type { Dropdown, Employee, EmployeeFormData, EmployeeRequest } from "./employeeTypes";
+import { reportingManagerList, type Dropdown, type Employee, type EmployeeFormData, type EmployeeRequest } from "./employeeTypes";
 import { updateEmployee } from "../store/slices/employee-slice";
 import { uploadEmployeeAttachments } from "./employeeApi";
 
@@ -84,13 +85,6 @@ const initialFormData: EmployeeFormData = {
     remarks: "",
 };
 
-const REPORTING_MANAGERS = [
-    { id: 1, name: "Rahul Sharma" },
-    { id: 2, name: "Amit Kumar" },
-    { id: 3, name: "Priya Singh" },
-    { id: 4, name: "Neha Verma" },
-];
-
 const LANGUAGE_OPTIONS = ["Hindi", "English", "Arabic"];
 const skillOptions = ["Java", "React", "SQL", "Spring Boot", "Python"];
 const BLOOD_GROUP_OPTIONS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -104,10 +98,20 @@ const inputSx = {
 };
 
 const sectionTitleSx = {
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
     fontSize: "14px",
     fontWeight: 700,
     color: "#1e293b",
     mb: 1.5,
+    "&::before": {
+        content: '""',
+        width: 4,
+        height: 18,
+        borderRadius: "4px",
+        backgroundColor: "#2563eb",
+    },
 };
 
 const cardSx = {
@@ -394,7 +398,7 @@ const UpdateEmployee = ({
         await validateLiveField(fieldName, updatedFormData);
     };
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const { name, files } = event.target;
         if (!files?.length) {
             return;
@@ -404,13 +408,12 @@ const UpdateEmployee = ({
         }
 
         const selectedFile = files[0];
+        event.target.value = "";
+
         const fieldName = name as keyof EmployeeFormData;
-        setFormData((prev) => ({ ...prev, [fieldName]: selectedFile }));
-        setErrors((prev) => {
-            const updated = { ...prev };
-            delete updated[fieldName];
-            return updated;
-        });
+        const updatedFormData = { ...formData, [fieldName]: selectedFile };
+        setFormData(updatedFormData);
+        await validateLiveField(fieldName, updatedFormData);
     };
 
     const handleRemoveFile = (field: "profileImage" | "documents") => {
@@ -442,13 +445,11 @@ const UpdateEmployee = ({
         await validateLiveField("joiningDate", updatedFormData);
     };
 
-    const handleReportingManagerChange = (
-        _: unknown,
-        selectedEmployee: { id: number; name: string } | null
-    ) => {
+    const handleReportingManagerChange = (event: SelectChangeEvent<number | string>) => {
+        const value = event.target.value;
         const updatedFormData = {
             ...formData,
-            reportingManager: selectedEmployee ? selectedEmployee.id : null,
+            reportingManager: value === "" ? null : Number(value),
         };
         setFormData(updatedFormData);
         validateLiveField("reportingManager", updatedFormData);
@@ -477,11 +478,8 @@ const UpdateEmployee = ({
     ) => {
         if (details?.option === "Select All") {
             setFormData((prev) => ({
-                ...prev,
-                skills:
-                    prev.skills.length === skillOptions.length
-                        ? []
-                        : [...skillOptions],
+                ...prev, skills:
+                    prev.skills.length === skillOptions.length ? [] : [...skillOptions],
             }));
             return;
         }
@@ -560,23 +558,45 @@ const UpdateEmployee = ({
                             alignItems: "center",
                             justifyContent: "space-between",
                             gap: 2,
-                            mb: 2,
+                            mb: 2.5,
+                            p: { xs: 1.5, sm: 2 },
                             flexWrap: "wrap",
+                            borderRadius: "10px",
+                            border: "1px solid #dbe3ef",
+                            background: "linear-gradient(90deg, #eff6ff 0%, #ffffff 100%)",
                         }}
                     >
-                        <Box>
-                            <Typography
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                            <Box
                                 sx={{
-                                    fontSize: { xs: "19px", sm: "21px", md: "23px" },
-                                    fontWeight: 700,
-                                    color: "#1e293b",
+                                    width: 44,
+                                    height: 44,
+                                    flexShrink: 0,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "10px",
+                                    backgroundColor: "#2563eb",
+                                    color: "#ffffff",
+                                    boxShadow: "0 4px 10px rgba(37,99,235,0.25)",
                                 }}
                             >
-                                Update Employee
-                            </Typography>
-                            <Typography sx={{ fontSize: "12px", color: "#64748b", mt: 0.3 }}>
-                                Update employee information
-                            </Typography>
+                                <ManageAccountsOutlinedIcon sx={{ fontSize: 24 }} />
+                            </Box>
+                            <Box>
+                                <Typography
+                                    sx={{
+                                        fontSize: { xs: "18px", sm: "20px", md: "22px" },
+                                        fontWeight: 700,
+                                        color: "#1e293b",
+                                        lineHeight: 1.25,
+                                    }}>
+                                    Update Employee
+                                </Typography>
+                                <Typography sx={{ fontSize: "12px", color: "#64748b", mt: 0.3 }}>
+                                    Update employee information
+                                </Typography>
+                            </Box>
                         </Box>
 
                         <Button
@@ -584,8 +604,7 @@ const UpdateEmployee = ({
                             variant="outlined"
                             startIcon={<ArrowBackIcon />}
                             onClick={onBack}
-                            sx={{ minHeight: 36, fontSize: "12px", borderRadius: "6px" }}
-                        >
+                            sx={{ minHeight: 36, fontSize: "12px", borderRadius: "6px", backgroundColor: "#ffffff" }}>
                             Back
                         </Button>
                     </Box>
@@ -696,26 +715,22 @@ const UpdateEmployee = ({
                                 </Grid>
 
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <Autocomplete
-                                        fullWidth
-                                        options={REPORTING_MANAGERS}
-                                        getOptionLabel={(option) => option.name}
-                                        value={
-                                            REPORTING_MANAGERS.find(
-                                                (employeeOption) => employeeOption.id === formData.reportingManager
-                                            ) || null
-                                        }
-                                        onChange={handleReportingManagerChange}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="Reporting Manager"
-                                                error={!!errors.reportingManager}
-                                                helperText={errors.reportingManager}
-                                                sx={inputSx}
-                                            />
-                                        )}
-                                    />
+                                    <FormControl fullWidth error={!!errors.reportingManager} sx={inputSx}>
+                                        <InputLabel>Reporting Manager</InputLabel>
+                                        <Select
+                                            name="reportingManager"
+                                            value={formData.reportingManager ?? ""}
+                                            label="Reporting Manager"
+                                            onChange={handleReportingManagerChange}>
+                                            <MenuItem value="">Select Manager</MenuItem>
+                                            {reportingManagerList.map((manager) => (
+                                                <MenuItem key={manager.id} value={manager.id}>
+                                                    {manager.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        <FormHelperText>{errors.reportingManager}</FormHelperText>
+                                    </FormControl>
                                 </Grid>
 
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -731,8 +746,7 @@ const UpdateEmployee = ({
                                             value={formData.employeeType}
                                             label="Employee Type"
                                             onChange={handleSelectChange}
-                                            onBlur={handleSelectBlur}
-                                        >
+                                            onBlur={handleSelectBlur}>
                                             <MenuItem value="">Select Type</MenuItem>
                                             <MenuItem value="Permanent">Permanent</MenuItem>
                                             <MenuItem value="Contract">Contract</MenuItem>
@@ -747,16 +761,14 @@ const UpdateEmployee = ({
                                         fullWidth
                                         required
                                         error={!!errors.gender}
-                                        sx={inputSx}
-                                    >
+                                        sx={inputSx}>
                                         <InputLabel>Gender</InputLabel>
                                         <Select
                                             name="gender"
                                             value={formData.gender}
                                             label="Gender"
                                             onChange={handleSelectChange}
-                                            onBlur={handleSelectBlur}
-                                        >
+                                            onBlur={handleSelectBlur}>
                                             <MenuItem value="">Select Gender</MenuItem>
                                             <MenuItem value="Male">Male</MenuItem>
                                             <MenuItem value="Female">Female</MenuItem>
@@ -770,16 +782,14 @@ const UpdateEmployee = ({
                                     <FormControl
                                         fullWidth
                                         error={!!errors.maritalStatus}
-                                        sx={inputSx}
-                                    >
+                                        sx={inputSx}>
                                         <InputLabel>Marital Status</InputLabel>
                                         <Select
                                             name="maritalStatus"
                                             value={formData.maritalStatus}
                                             label="Marital Status"
                                             onChange={handleSelectChange}
-                                            onBlur={handleSelectBlur}
-                                        >
+                                            onBlur={handleSelectBlur}>
                                             <MenuItem value="">Select Status</MenuItem>
                                             <MenuItem value="Married">Married</MenuItem>
                                             <MenuItem value="Unmarried">Unmarried</MenuItem>
@@ -926,8 +936,7 @@ const UpdateEmployee = ({
                                             value={formData.countryId}
                                             label="Country"
                                             onChange={handleSelectChange}
-                                            onBlur={handleSelectBlur}
-                                        >
+                                            onBlur={handleSelectBlur}>
                                             <MenuItem value="">Select Country</MenuItem>
                                             {countries.map((country) => (
                                                 <MenuItem key={country.id} value={country.id}>
@@ -997,7 +1006,7 @@ const UpdateEmployee = ({
                                             label="Blood Group"
                                             onChange={handleSelectChange}
                                         >
-                                            <MenuItem value=""></MenuItem>
+                                            <MenuItem value="">Select Blood Group</MenuItem>
                                             {BLOOD_GROUP_OPTIONS.map((group) => (
                                                 <MenuItem key={group} value={group}>
                                                     {group}
@@ -1014,17 +1023,14 @@ const UpdateEmployee = ({
                                         <FormGroup row>
                                             {LANGUAGE_OPTIONS.map((language) => {
                                                 const selectedLanguages = formData.languages
-                                                    ? formData.languages.split(", ")
-                                                    : [];
+                                                    ? formData.languages.split(", ") : [];
                                                 return (
                                                     <FormControlLabel
                                                         key={language}
                                                         control={
                                                             <Checkbox
                                                                 checked={selectedLanguages.includes(language)}
-                                                                onChange={handleLanguageToggle(language)}
-                                                            />
-                                                        }
+                                                                onChange={handleLanguageToggle(language)} />}
                                                         label={language}
                                                     />
                                                 );
@@ -1042,18 +1048,16 @@ const UpdateEmployee = ({
                                         onChange={handleSkillsChange}
                                         disableCloseOnSelect
                                         renderOption={(props, option) => {
+                                            const { key, ...optionProps } = props;
                                             const allSelected =
                                                 formData.skills.length === skillOptions.length;
 
                                             return (
-                                                <li {...props}>
+                                                <li key={key} {...optionProps}>
                                                     <Checkbox
                                                         size="small"
                                                         checked={
-                                                            option === "Select All"
-                                                                ? allSelected
-                                                                : formData.skills.includes(option)
-                                                        }
+                                                            option === "Select All" ? allSelected : formData.skills.includes(option)}
                                                         sx={{ mr: 1 }}
                                                     />
                                                     {option}
@@ -1067,9 +1071,7 @@ const UpdateEmployee = ({
                                                 error={!!errors.skills}
                                                 helperText={errors.skills}
                                                 placeholder={
-                                                    formData.skills.length === skillOptions.length
-                                                        ? "All skills selected"
-                                                        : "Select skills"
+                                                    formData.skills.length === skillOptions.length ? "All skills selected" : "Select skills"
                                                 }
                                                 sx={inputSx}
                                             />
@@ -1100,8 +1102,7 @@ const UpdateEmployee = ({
                                                 fontSize: "12px",
                                                 borderRadius: "6px",
                                                 textTransform: "none",
-                                            }}
-                                        >
+                                            }}>
                                             {formData.profileImage
                                                 ? formData.profileImage.name
                                                 : existingProfileImage
@@ -1124,13 +1125,14 @@ const UpdateEmployee = ({
                                                     border: "1px solid #fecaca",
                                                     borderRadius: "6px",
                                                     flexShrink: 0,
-                                                }}
-                                            >
+                                                }}>
                                                 <CloseIcon sx={{ fontSize: 18 }} />
                                             </IconButton>
                                         )}
                                     </Box>
-                                    {errors.profileImage && <FormHelperText error>{errors.profileImage}</FormHelperText>}
+                                    <FormHelperText error={!!errors.profileImage} sx={{ ml: "14px", mt: 0.5 }}>
+                                        {errors.profileImage || "Allowed: JPG, JPEG, PNG (max 5 MB)"}
+                                    </FormHelperText>
                                 </Grid>
 
                                 {/* Documents */}
@@ -1177,7 +1179,9 @@ const UpdateEmployee = ({
                                             </IconButton>
                                         )}
                                     </Box>
-                                    {errors.documents && <FormHelperText error>{errors.documents}</FormHelperText>}
+                                    <FormHelperText error={!!errors.documents} sx={{ ml: "14px", mt: 0.5 }}>
+                                        {errors.documents || "Allowed: PDF, DOCX, XLSX, PNG, JPG (max 20 MB)"}
+                                    </FormHelperText>
                                 </Grid>
 
                                 <Grid size={12}>

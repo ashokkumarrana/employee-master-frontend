@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import {
     Button,
     Dialog,
@@ -28,6 +29,18 @@ const ConfirmDialog = ({
     onConfirm,
     onCancel,
 }: ConfirmDialogProps) => {
+    const wasOpen = useRef(open);
+
+    useLayoutEffect(() => {
+        if (wasOpen.current && !open) {
+            const active = document.activeElement;
+            if (active instanceof HTMLElement && active.closest(".MuiDialog-root")) {
+                active.blur();
+            }
+        }
+        wasOpen.current = open;
+    }, [open]);
+
     return (
         <Dialog
             open={open}
@@ -44,7 +57,6 @@ const ConfirmDialog = ({
             }}
         >
             {/* TITLE */}
-
             <DialogTitle
                 sx={{
                     pb: 1,
@@ -57,7 +69,6 @@ const ConfirmDialog = ({
             </DialogTitle>
 
             {/* MESSAGE */}
-
             <DialogContent>
                 <Typography
                     sx={{
@@ -87,7 +98,6 @@ const ConfirmDialog = ({
                         minWidth: 85,
                         color: "#475569",
                         borderColor: "#cbd5e1",
-
                         "&:hover": {
                             borderColor: "#94a3b8",
                             backgroundColor: "#f8fafc",
@@ -102,13 +112,9 @@ const ConfirmDialog = ({
                     color="error"
                     onClick={onConfirm}
                     disabled={loading}
-                    sx={{
-                        minWidth: 85,
-                    }}
+                    sx={{ minWidth: 85 }}
                 >
-                    {loading
-                        ? "Deleting..."
-                        : confirmText}
+                    {loading ? "Deleting..." : confirmText}
                 </Button>
             </DialogActions>
         </Dialog>

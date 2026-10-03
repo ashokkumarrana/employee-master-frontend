@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import {
     Button,
     Dialog,
@@ -22,6 +23,18 @@ const ResponseDialog = ({
     onClose,
     onSuccess,
 }: ResponseDialogProps) => {
+    const wasOpen = useRef(open);
+
+    useLayoutEffect(() => {
+        if (wasOpen.current && !open) {
+            const active = document.activeElement;
+            if (active instanceof HTMLElement && active.closest(".MuiDialog-root")) {
+                active.blur();
+            }
+        }
+        wasOpen.current = open;
+    }, [open]);
+
     const handleOk = () => {
         onClose();
 
@@ -86,13 +99,9 @@ const ResponseDialog = ({
                         borderRadius: "6px",
                         fontSize: "13px",
                         fontWeight: 500,
-                        backgroundColor: success
-                            ? "#15803d"
-                            : "#dc2626",
+                        backgroundColor: success ? "#15803d" : "#dc2626",
                         "&:hover": {
-                            backgroundColor: success
-                                ? "#166534"
-                                : "#b91c1c",
+                            backgroundColor: success ? "#166534" : "#b91c1c",
                         },
                     }}
                 >

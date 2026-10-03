@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Box, Chip } from "@mui/material";
 import ReactTable, { type EmployeeTableColumn } from "../../components/common/ReactTable";
-import type { Dropdown, EmployeeHistory } from "../../pages/employee-master/employeeTypes";
-import { getEmployeeHistory } from "../../pages/employee-master/employeeApi";
+import { getReportingManagerName, type Dropdown, type EmployeeHistory } from "../../pages/employee-master/employeeTypes";
+import { downloadEmployeeAttachment, getEmployeeHistory } from "../../pages/employee-master/employeeApi";
+import { AttachmentDownloadButton } from "./Attachment";
 
 interface EmployeeHistoryTableProps {
     employeeId: number;
@@ -44,7 +45,6 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
                     sortBy,
                     direction
                 );
-                console.log("History response:", res);
                 if (cancelled) return;
                 setHistory(res.data?.content ?? []);
                 setTotalCount(res.data?.totalElements ?? 0);
@@ -55,7 +55,6 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
                     setTotalCount(0);
                     onTotalCountChange?.(0);
                 }
-                console.error("Failed to fetch employee history", err);
             } finally {
                 if (!cancelled) {
                     setLoading(false);
@@ -94,6 +93,22 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
                 {formatted}
             </Box>
         );
+    };
+
+    const handleDownloadAttachment = async (path: string) => {
+        try {
+            const { blob, filename } = await downloadEmployeeAttachment(path);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const cell = (
@@ -152,7 +167,13 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
             id: "reportingManager",
             label: "Reporting Manager",
             minWidth: 130,
-            render: (row) => cell(row, row.reportingManager, row._previous?.reportingManager)
+            render: (row) =>
+                cell(
+                    row,
+                    row.reportingManager,
+                    row._previous?.reportingManager,
+                    getReportingManagerName
+                )
         },
         {
             id: "employeeType",
@@ -258,16 +279,35 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
             minWidth: 90,
             render: (row) => cell(row, row.status, row._previous?.status, (v) => (v ? "Inactive" : "Active")),
         },
-        // {
-        //     id: "profileImage",
-        //     label: "Profile Image",
-        //     minWidth: 140, render: (row) => cell(row, row.profileImage, row._previous?.profileImage)
-        // },
-        // {
-        //     id: "documents",
-        //     label: "Documents",
-        //     minWidth: 140, render: (row) => cell(row, row.documents, row._previous?.documents)
-        // },
+        {
+            id: "profileImage",
+            label: "Profile Image",
+            minWidth: 130,
+            align: "center",
+            render: (row) => (
+                <AttachmentDownloadButton
+                    path={row.profileImage}
+                    kind="image"
+                    onDownload={handleDownloadAttachment}
+                    fetchAttachment={downloadEmployeeAttachment}
+                />
+            ),
+        },
+        {
+            id: "documents",
+            label: "Documents",
+            minWidth: 130,
+            align: "center",
+            render: (row) => (
+                <AttachmentDownloadButton
+                    path={row.documents}
+                    kind="document"
+                    onDownload={handleDownloadAttachment}
+                    fetchAttachment={downloadEmployeeAttachment}
+                    showView={false}
+                />
+            ),
+        },
         {
             id: "remarks",
             label: "Remarks",
@@ -277,7 +317,7 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
             id: "createdBy",
             label: "Created By",
             minWidth: 120,
-            render: (row) => row.createdByName ?? "—",
+            render: (row) => row.createdByName ?? "N/A",
         },
         {
             id: "createdAt",
@@ -288,7 +328,7 @@ const EmployeeHistoryTable = ({ employeeId, lookups, onTotalCountChange }: Emplo
             id: "changedBy",
             label: "Changed By",
             minWidth: 120,
-            render: (row) => row.changedByName ?? "—",
+            render: (row) => row.changedByName ?? "N/A",
         },
         {
             id: "changedAt",

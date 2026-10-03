@@ -47,8 +47,8 @@ const EmployeeExcelDownloadDialog = ({
 
     const hasRange = Boolean(fromDate && toDate && fromDate.isValid() && toDate.isValid());
     const selectedDays = hasRange ? toDate!.diff(fromDate!, "day") : 0;
-    const isDirectDownload = hasRange && selectedDays > 0 && selectedDays <= MAX_DIRECT_DOWNLOAD_DAYS;
-    const isInvalidRange = hasRange && selectedDays <= 0;
+    const isInvalidRange = hasRange && selectedDays < 0;
+    const isDirectDownload = hasRange && selectedDays >= 0 && selectedDays <= MAX_DIRECT_DOWNLOAD_DAYS;
 
     const handleClose = () => {
         if (loading) return;
@@ -61,7 +61,6 @@ const EmployeeExcelDownloadDialog = ({
             setLoading(true);
             const from = fromDate.format("YYYY-MM-DD");
             const to = toDate.format("YYYY-MM-DD");
-            // const result = await downloadEmployees(from, to);
             const result = await downloadEmployees(from, to, filters);
 
             if (result.emailSent) {
