@@ -45,6 +45,16 @@ const getInitialFilters = (): EmployeeFilterValues => ({
     city: "",
 });
 
+export const getFiltersKey = (filter: EmployeeFilterValues) =>
+    JSON.stringify({
+        dateFrom: filter.dateFrom ? dayjs(filter.dateFrom).format("YYYY-MM-DD") : "",
+        dateTo: filter.dateTo ? dayjs(filter.dateTo).format("YYYY-MM-DD") : "",
+        department: filter.department || "",
+        designation: filter.designation || "",
+        status: filter.status === "active" || filter.status === "inactive" ? filter.status : "",
+        city: (filter.city || "").trim(),
+    });
+
 export interface SelectedFilterItem {
     key: keyof EmployeeFilterValues;
     label: string;

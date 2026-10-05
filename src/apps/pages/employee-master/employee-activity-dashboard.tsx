@@ -17,7 +17,7 @@ import { useAppDispatch } from "../hooks/useAppDispatch";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { fetchEmployeeCounts, fetchEmployees, deleteEmployee, } from "../store/slices/employee-slice";
 import EmployeeFabActions from "../../components/common/FavAction";
-import EmployeeFilter from "./employee-filters";
+import EmployeeFilter, { getFiltersKey } from "./employee-filters";
 import { AttachmentDownloadButton } from "../../components/common/Attachment";
 import EmployeeHistoryDialog from "../../components/common/EmployeeHistoryDialog";
 import EmployeeExcelDownloadDialog from "../../components/common/EmployeeExcelDownloadDialog";
@@ -188,7 +188,9 @@ const EmployeeActivityBoard = () => {
     };
 
     const handleSearch = (filters: EmployeeFilterValues) => {
-        setAppliedFilters(filters);
+        if (getFiltersKey(filters) !== getFiltersKey(appliedFilters)) {
+            setAppliedFilters(filters);
+        }
         setIsSearchActive(false);
         setPage(0);
     };
